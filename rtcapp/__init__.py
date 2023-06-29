@@ -20,5 +20,5 @@ db = SQLAlchemy(app)
 api = Api(app)
 migrate = Migrate(app, db)
 
-cors = CORS(app)
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 jwt = JWTManager(app)

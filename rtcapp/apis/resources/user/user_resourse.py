@@ -1,7 +1,8 @@
 from flask_restful import Resource, fields, marshal_with, reqparse
-from app.models import User
-from app import db
+from rtcapp.models import User
+from rtcapp import db
 from werkzeug.security import generate_password_hash
+from flask import jsonify
 
 user_fields = {
     'id': fields.Integer,
@@ -17,24 +18,7 @@ class UserResource(Resource):
         user = User.query.get_or_404(user_id)
         return user
 
-    @marshal_with(user_fields)
-    def post(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument('firstName', type=str, required=True, help='First name is required.')
-        parser.add_argument('lastName', type=str, required=True, help='Last name is required.')
-        parser.add_argument('email', type=str, required=True, help='Email is required.')
-        parser.add_argument('password', type=str, required=True, help='Password is required.')
-        args = parser.parse_args()
-
-        existing_user = User.query.filter_by(email=args['email']).first()
-        if existing_user:
-            return {'message': 'Email already exists.'}, 400
-
-        user = User(firstName=args['firstName'], lastName=args['lastName'], email=args['email'], password=args['password'])
-        db.session.add(user)
-        db.session.commit()
-        return user, 201
-
+    
     @marshal_with(user_fields)
     def put(self, user_id):
         user = User.query.get_or_404(user_id)
@@ -63,3 +47,21 @@ class UserResource(Resource):
         db.session.delete(user)
         db.session.commit()
         return {'message': f'User {user_id} deleted successfully'}
+
+class CreateUserResourse(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('firstName', type=str, required=True, help='First name is required.')
+        parser.add_argument('lastName', type=str, required=True, help='Last name is required.')
+        parser.add_argument('email', type=str, required=True, help='Email is required.')
+        parser.add_argument('password', type=str, required=True, help='Password is required.')
+        args = parser.parse_args()
+
+        existing_user = User.query.filter_by(email=args['email']).first()
+        if existing_user:
+            return {'message': 'Email already exists.'},400
+
+        user = User(firstName=args['firstName'], lastName=args['lastName'], email=args['email'], password=args['password'])
+        db.session.add(user)
+        db.session.commit()
+        return {'message': 'User account created!'},200

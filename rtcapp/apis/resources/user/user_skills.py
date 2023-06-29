@@ -1,7 +1,7 @@
 from flask_restful import Resource, reqparse
 from flask import jsonify
 
-from app import db
+from rtcapp import db
 
 from models import User, Skill
 
