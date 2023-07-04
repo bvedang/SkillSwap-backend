@@ -1,7 +1,6 @@
 from flask_restful import Resource, reqparse
-from flask_jwt_extended import create_access_token, jwt_required
+from flask_jwt_extended import create_access_token
 from rtcapp.models import User
-from rtcapp import models
 
 class AuthResource(Resource):
     def post(self):

@@ -2,7 +2,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from rtcapp import db
 
 class User(db.Model):
-    
     id = db.Column(db.Integer, primary_key=True)
     firstName = db.Column(db.String(64), nullable=False)
     lastName = db.Column(db.String(64), nullable=False)
@@ -10,6 +9,7 @@ class User(db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128), nullable=False)
     skills = db.relationship('Skill', backref='user', lazy=True)
+    interests = db.relationship('Interest', backref='user', lazy=True)
 
     @property
     def password(self):
@@ -28,7 +28,6 @@ class User(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-
     def __repr__(self):
         return '<User {}>'.format(self.firstName)
 
@@ -40,6 +39,7 @@ class Category(db.Model):
 
     def __init__(self, name):
         self.name = name
+
 
 class Skill(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -53,3 +53,13 @@ class Skill(db.Model):
         self.description = description
         self.user_id = user_id
         self.category_id = category_id
+
+
+class Interest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    skill = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    def __init__(self, skill, user_id):
+        self.skill = skill
+        self.user_id = user_id
